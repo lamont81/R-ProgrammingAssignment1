@@ -1,0 +1,22 @@
+# Create an empty data frame called 'allfiles'
+allfiles<- data.frame()
+
+#Create a function called pollutantmean, which takes three arguements
+#called 'directory', 'pollutant' and 'id'
+pollutantmean <- function(directory='specdata', pollutant, id=1:332) {
+  
+  #Within the function, creat a FOR LOOP that reads and combines the
+  #requested files
+    for(i in id){
+                file<- list.files(directory, full.names=TRUE)
+                allfiles <- rbind(allfiles, read.csv(file[i]))
+                }
+  
+  #Select all the rows and the specified pollutant, either sulfate or nitrate  
+        x<- allfiles[, pollutant]
+  
+  #Calculate the mean of this vector, ingnoring any mossing values
+        mean(x,na.rm=TRUE)
+                
+    
+                                                               }
