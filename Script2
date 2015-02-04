@@ -1,0 +1,28 @@
+#Create and emply data set called 'combine'
+combine<- data.frame()
+
+#Create a function called 'complete' that takes two arguement that
+#are 'directory' and 'id'
+complete<- function(directory='specdata', id=1:332){
+  
+  #within the function, create a FOR LOOP that creates a list of all
+  #the files in the folder called 'specdata'. After this, combine all
+  #the specified files into one data frames called 'combine'
+  for(i in id){
+    file<- list.files(directory, full.names=TRUE)
+    combine <- rbind(combine, read.csv(file[i]))
+  }
+  
+  #Create a new data set that omits missing values
+  new_data <- na.omit(combine)
+  
+  #The table function is used to count the total number of rows for
+  #each id (file)
+  x<- as.data.frame(table(new_data$ID))
+  
+  #Change the column names to 'ID' and 'nobs'
+  colnames(x)<- c('ID', 'nobs')
+  
+  #print the results
+  print(x)
+}
