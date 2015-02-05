@@ -1,0 +1,55 @@
+#source the function called 'complete.R' created previously
+source('complete.R')
+
+#create an empty data frame called 'cr', 'combine' and 'subthresh'
+cr<- data.frame()
+combine<- data.frame()
+subthresh<- data.frame()
+
+#create a function named 'corr' that takes two arguements
+corr<- function(directory='specdata', threshhold = 0) {
+      
+      #Within the function, creat a FOR LOOP that reads and combines all
+      #332 files
+      for(i in 1:332){
+        file<- list.files(directory, full.names=TRUE)
+        combine <- rbind(combine, read.csv(file[i]))
+                     }
+      
+      #create a new data set that omits all missing values
+      new_data <- na.omit(combine)
+      
+      #The 'table' function is used to count the total number of rows for
+      #each id (file). This creates a data set with a row for each ID and
+      #shows the number of complete observations for that ID
+      thresh<- as.data.frame(table(new_data$ID))
+      colnames(thresh)<- c('ID', 'nobs')
+      
+      #The IF Statement will identify if the ID with the highest number
+      #of observations is greater or less than the specified threshold.
+      #If it is less than the specified threshold then a new data set is
+      #created called 'subthresh', which selects only the IDs that have a
+      #total number of observations greater or equal to the specified threshold
+      if(max(thresh$nobs)< threshhold) {subthresh$ID==1}
+                    else {subthresh<- subset(thresh, thresh$nobs>= threshhold)}
+      
+      #For every ID greater or equal to the specified threshold, select each subset
+      #of data realting to that ID and calculate the correlation between nitrate
+      #and sulfate.
+      for(i in subthresh$ID){
+               identity<- i   
+               x<- subset(new_data, new_data$ID== identity)
+               y<- cor(x$nitrate, x$sulfate)
+               #for each subsequent correlation, combine them into a new vector
+               #called 'cr'
+               cr<- rbind(cr, y)
+                            } 
+      #Again, if the ID with the highest number of observations is less than  
+      #the specified threshold then set 'cr' to equal zero.
+      if(max(thresh$nobs)< threshhold) {cr<- 0}
+              #else, round the vector of correlations to 4 d.p and convert it
+              #to a true vector
+               cr1<- round(cr, digits=4);
+               cr2<- as.vector(cr1[[1]]);
+               print(cr2)
+                                                      }
